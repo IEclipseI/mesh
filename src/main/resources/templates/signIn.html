@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Sign in</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<h1>Get secret token</h1>
+
+<div th:if="${token}" th:utext="${token}"></div>
+
+<form th:unless="${token}"
+      th:action="@{/signin}"
+      th:object="${loginForm}" method="POST">
+    Login:
+    <input type="text" th:field="*{login}"/>
+    <br/>
+    Password:
+    <input type="text" th:field="*{password}"/>
+    <br/>
+    <input type="submit" value="Create"/>
+</form>
+
+<br/>
+
+<div th:if="${errorMessage}" th:utext="${errorMessage}"
+     style="color:red;font-style:italic;">
+    ...
+</div>
+
+</body>
+</html>

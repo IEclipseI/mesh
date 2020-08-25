@@ -1,0 +1,1 @@
+INSERT INTO admin VALUES (DEFAULT, 'user', '19c2a0dbd8e3a41b25d504744c57df8853e36677', null, null )
