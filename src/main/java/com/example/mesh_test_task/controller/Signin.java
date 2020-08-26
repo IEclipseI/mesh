@@ -23,18 +23,18 @@ public class Signin {
         this.adminService = adminService;
     }
 
-    @GetMapping(path = "signin")
+    @GetMapping(path = "/signin")
     public String signinPage(Model model) {
         model.addAttribute("loginForm", new LoginForm());
         return "signIn";
     }
 
-    @PostMapping(path = "signin")
+    @PostMapping(path = "/signin")
     public String signinPage(Model model, LoginForm loginForm) {
         Admin admin = adminService.getAdmin(loginForm.getLogin(), sha1(loginForm.getPassword()));
         if (admin == null) {
             model.addAttribute("errorMessage", "Invalid login or password");
-            return "/signIn";
+            return "signIn";
         }
         Instant tokenExpirationDate = admin.getTokenExpirationDate();
         if (tokenExpirationDate == null || tokenExpirationDate.isBefore(Instant.now())) {
@@ -47,7 +47,7 @@ public class Signin {
         } else {
             model.addAttribute("token", admin.getToken());
         }
-        return "/signIn";
+        return "signIn";
     }
 
     private String sha1(String s) {

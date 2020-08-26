@@ -38,14 +38,14 @@ public class ErrorStoreFilter extends GenericFilterBean {
             }
             @Override
             public  PrintWriter getWriter() throws IOException {
-                return new PrintWriter(new DelegatingServletOutputStream (new TeeOutputStream(super.getOutputStream(), ps))
+                return new PrintWriter(new DelegatingServletOutputStream(new TeeOutputStream(super.getOutputStream(), ps))
                 );
             }
         });
-        if (((HttpServletResponse) response).getStatus() >= 400) {
-//            ApiError apiError = new ApiError();
-//            apiError.setMsg(body.toString());
-//            apiErrorService.save(apiError);
+        if (((HttpServletResponse) response).getStatus() >= 400 && !body.toString().isEmpty()) {
+            ApiError apiError = new ApiError();
+            apiError.setMsg(body.toString());
+            apiErrorService.save(apiError);
         }
     }
 }

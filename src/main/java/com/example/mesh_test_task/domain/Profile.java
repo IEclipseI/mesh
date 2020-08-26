@@ -1,6 +1,5 @@
 package com.example.mesh_test_task.domain;
 
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,11 +18,9 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotNull
     @NotEmpty
     private String name;
 
-    @NotNull
     @NotEmpty
     @Email
     private String email;

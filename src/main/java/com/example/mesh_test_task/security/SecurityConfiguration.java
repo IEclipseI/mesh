@@ -25,8 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
         new AntPathRequestMatcher("/profiles/**/*"),
         new AntPathRequestMatcher("/profiles"),
-        new AntPathRequestMatcher("/profile"),
-        new AntPathRequestMatcher("/profile/**/*"),
+        new AntPathRequestMatcher("/profile/set"),
         new AntPathRequestMatcher("/error/last")
     );
 
@@ -55,6 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .requestMatchers(PROTECTED_URLS)
             .authenticated()
             .and()
+            .csrf().disable()
             .formLogin().disable()
             .httpBasic().disable()
             .logout().disable();

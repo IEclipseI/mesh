@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 @Getter
@@ -19,7 +18,6 @@ public class ApiError {
     private long id;
 
     @NotNull
-    @NotEmpty
     private String msg;
 
     @CreationTimestamp

@@ -9,12 +9,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/profiles")
@@ -23,11 +29,6 @@ public class Profiles {
 
     public Profiles(ProfileService profileService) {
         this.profileService = profileService;
-    }
-
-    @ExceptionHandler(value = Exception.class)
-    public void handler(Exception e) {
-        e.printStackTrace();
     }
 
     @Operation(summary = "Lists all registered profiles")
@@ -57,7 +58,7 @@ public class Profiles {
     public ResponseEntity<Object> getProfileById(@PathVariable Long id) {
         Profile profile = profileService.findById(id);
         if (profile == null) {
-            return new ResponseEntity<>("Profile with id: " + id + " not found.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Msg("Profile with id: " + id + " not found."), HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(profile, HttpStatus.OK);
         }
@@ -67,19 +68,26 @@ public class Profiles {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200",
             content = @Content(
-                mediaType = "application/json",
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = Profile.class))),
         @ApiResponse(responseCode = "404", description = "Profile with given id not found",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = Msg.class)))
     })
-    @PostMapping(path = "/get", consumes = "application/json")
+    @PostMapping(path = "/get", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getProfileByEmail(@RequestBody Email emailReq) {
+        Set<ConstraintViolation<Email>> violations = Validation.buildDefaultValidatorFactory()
+            .getValidator()
+            .validate(emailReq);
+        if (!violations.isEmpty()) {
+            ConstraintViolation<Email> next = violations.iterator().next();
+            return new ResponseEntity<>(new Msg(next.getPropertyPath() + " " + next.getMessage()), HttpStatus.BAD_REQUEST);
+        }
         String email = emailReq.email.toLowerCase();
         Profile profile = profileService.findByEmail(email);
         if (profile == null) {
-            return new ResponseEntity<>("Profile with email: " + email + " not found.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Msg("Profile with email: " + email + " not found."), HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(profile, HttpStatus.OK);
         }
@@ -102,8 +110,10 @@ public class Profiles {
         }
     }
 
-    @Value
-    private static class Email {
+    @Data
+    @NoArgsConstructor
+    public static class Email {
+        @NotBlank
         String email;
     }
 }
